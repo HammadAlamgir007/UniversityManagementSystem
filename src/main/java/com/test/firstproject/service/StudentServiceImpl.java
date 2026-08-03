@@ -33,7 +33,6 @@ public class StudentServiceImpl implements StudentService {
         this.emailService = emailService;
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public List<StudentResponse> searchStudent(String name, String email) {
@@ -58,8 +57,6 @@ public class StudentServiceImpl implements StudentService {
                 .toList();
     }
 
-
-
     @Override
     @Transactional
     public StudentResponse createStudent(StudentRequest request) {
@@ -73,17 +70,13 @@ public class StudentServiceImpl implements StudentService {
 
         }
 
-
         Student student = new Student();
 
         student.setName(request.name());
         student.setEmail(request.email());
         student.setAge(request.age());
 
-
-        Student savedStudent =
-                studentRepository.save(student);
-
+        Student savedStudent = studentRepository.save(student);
         emailService.sendEmail(
 
                 savedStudent.getEmail(),
@@ -99,17 +92,11 @@ public class StudentServiceImpl implements StudentService {
         return mapToResponse(savedStudent);
     }
 
-
-
     @Override
     @Transactional(readOnly = true)
     public List<StudentResponse> getAllStudents() {
-
-
         List<Student> students =
                 studentRepository.findAllWithProfiles();
-
-
         return students.stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -123,7 +110,6 @@ public class StudentServiceImpl implements StudentService {
         if (size > 100) {
             size = 100;
         }
-
         // Determine the sorting direction
         Sort sort = direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
@@ -132,15 +118,10 @@ public class StudentServiceImpl implements StudentService {
         // Construct the Pageable request
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        // Fetch the paginated and sorted data from the repository
-        // Note: Make sure studentRepository has a standard findAll(Pageable) available!
         Page<Student> studentsPage = studentRepository.findAll(pageable);
 
-        // Map the Entity to the DTO using your existing mapping logic at the bottom
         return studentsPage.map(this::mapToResponse);
     }
-
-
 
     @Override
     @Transactional(readOnly = true)
@@ -157,35 +138,22 @@ public class StudentServiceImpl implements StudentService {
 
     }
 
-
-
-
-
     @Override
     @Transactional(readOnly = true)
     public StudentWithProfileResponse getStudentWithProfile(Long id) {
 
-
-        Student student =
-                studentRepository.findWithProfileById(id)
+        Student student = studentRepository.findWithProfileById(id)
                         .orElseThrow(
                                 () -> new StudentNotFoundException(id)
                         );
-
-
+        var profile = student.getProfile();
         return new StudentWithProfileResponse(
-
                 student.getId(),
-
                 student.getName(),
-
-                student.getProfile().getPhone(),
-
-                student.getProfile().getAddress(),
-
-                student.getProfile().getBloodGroup(),
-
-                student.getProfile().getCnic()
+                profile != null ? profile.getPhone() : null,
+                profile != null ? profile.getAddress() : null,
+                profile != null ? profile.getBloodGroup() : null,
+                profile != null ? profile.getCnic() : null
 
         );
 
@@ -205,11 +173,9 @@ public class StudentServiceImpl implements StudentService {
                                 () -> new StudentNotFoundException(id)
                         );
 
-
         existingStudent.setName(request.name());
         existingStudent.setEmail(request.email());
         existingStudent.setAge(request.age());
-
 
         Student updatedStudent =
                 studentRepository.save(existingStudent);
@@ -218,10 +184,6 @@ public class StudentServiceImpl implements StudentService {
         return mapToResponse(updatedStudent);
 
     }
-
-
-
-
 
     @Override
     @Transactional
@@ -239,18 +201,8 @@ public class StudentServiceImpl implements StudentService {
 
     }
 
-
-
-
-    private StudentResponse mapToResponse(Student student) {
-
-
-        StudentProfileDto profileDto = null;
-
-
+    private StudentResponse mapToResponse(Student student) {StudentProfileDto profileDto = null;
         if (student.getProfile() != null) {
-
-
             profileDto =
                     new StudentProfileDto(
 
@@ -267,9 +219,6 @@ public class StudentServiceImpl implements StudentService {
                     );
 
         }
-
-
-
         return new StudentResponse(
 
                 student.getId(),

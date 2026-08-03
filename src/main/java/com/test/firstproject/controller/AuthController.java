@@ -1,10 +1,16 @@
 package com.test.firstproject.controller;
 
 import com.test.firstproject.dto.request.LoginRequest;
+import com.test.firstproject.dto.request.RefreshTokenRequest;
 import com.test.firstproject.dto.request.SignupRequest;
 import com.test.firstproject.dto.response.ApiResponse;
 import com.test.firstproject.dto.response.LoginResponse;
+import com.test.firstproject.entity.RefreshToken;
+import com.test.firstproject.entity.User;
+import com.test.firstproject.security.AesEncryptionService;
+import com.test.firstproject.security.JwtService;
 import com.test.firstproject.service.AuthService;
+import com.test.firstproject.service.RefreshTokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +24,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    private final AesEncryptionService aesEncryptionService;
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Void>>Signup(
             @Valid
@@ -50,5 +57,58 @@ public class AuthController {
                 );
 
         return ResponseEntity.ok(response);
+    }
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<LoginResponse>> refreshToken(
+
+            @RequestBody RefreshTokenRequest request
+
+    ){
+
+
+        LoginResponse response =
+                authService.refreshToken(request);
+
+
+
+        return ResponseEntity.ok(
+
+                new ApiResponse<>(
+
+                        "Token refreshed successfully",
+
+                        "00",
+
+                        response
+
+                )
+
+        );
+
+    }
+    @GetMapping("/aes-test")
+    public String aesTest() {
+
+        String original = "Hello Spring Boot";
+
+        String encrypted =
+                aesEncryptionService.encrypt(original);
+
+        String decrypted =
+                aesEncryptionService.decrypt(encrypted);
+
+        return """
+            Original : %s
+
+            Encrypted : %s
+
+            Decrypted : %s
+            """
+                .formatted(
+                        original,
+                        encrypted,
+                        decrypted
+                );
+
     }
 }

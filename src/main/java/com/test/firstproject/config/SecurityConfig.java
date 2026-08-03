@@ -1,6 +1,8 @@
 package com.test.firstproject.config;
 
+import com.test.firstproject.security.CustomAccessDeniedHandler;
 import com.test.firstproject.security.CustomUserDetailsService;
+import com.test.firstproject.security.JwtAuthenticationEntryPoint;
 import com.test.firstproject.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,17 +18,30 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
-
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final AuthenticationProvider authenticationProvider;
     public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter) {
+            JwtAuthenticationFilter jwtAuthenticationFilter, AuthenticationProvider authenticationProvider,
+
+            JwtAuthenticationEntryPoint authenticationEntryPoint,
+
+            CustomAccessDeniedHandler accessDeniedHandler) {
 
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.authenticationProvider = authenticationProvider;
+
+        this.authenticationEntryPoint = authenticationEntryPoint;
+
+        this.accessDeniedHandler = accessDeniedHandler;
 
     }
 
@@ -38,6 +53,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated())

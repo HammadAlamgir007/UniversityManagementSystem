@@ -1,5 +1,6 @@
 package com.test.firstproject.entity;
-
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -34,6 +35,13 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

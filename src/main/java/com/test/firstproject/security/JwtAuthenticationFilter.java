@@ -22,7 +22,7 @@ public class JwtAuthenticationFilter
         extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-
+    private final AesEncryptionService aesEncryptionService;
     private final CustomUserDetailsService
             userDetailsService;
 
@@ -47,39 +47,49 @@ public class JwtAuthenticationFilter
 
         }
 
-        String jwt =
+        String encryptedToken =
                 authHeader.substring(7);
-        log.info("JWT: {}", jwt);
+        try {
+            String jwt =
+                    aesEncryptionService.decrypt(
+                            encryptedToken
+                    );
+            log.info("JWT: {}", jwt);
 
-        String username = jwtService.extractUsername(jwt);
-        log.info("Username extracted from token: {}", username);
-        if (username != null
-                && SecurityContextHolder
-                .getContext()
-                .getAuthentication() == null) {
+            String username = jwtService.extractUsername(jwt);
+            log.info("Username extracted from token: {}", username);
+            if (username != null
+                    && SecurityContextHolder
+                    .getContext()
+                    .getAuthentication() == null) {
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            log.info("User loaded from database: {}", userDetails.getUsername());
-            if (jwtService.isTokenValid(
-                    jwt,
-                    userDetails.getUsername())) {
-                log.info("JWT is valid.");
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null,
-                                userDetails.getAuthorities());
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                log.info("User loaded from database: {}", userDetails.getUsername());
+                if (jwtService.isTokenValid(
+                        jwt,
+                        userDetails.getUsername())) {
+                    log.info("JWT is valid.");
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null,
+                                    userDetails.getAuthorities());
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder
-                        .getContext()
-                        .setAuthentication(authToken);
-                log.info("User authenticated successfully.");
-            } else {
-                log.warn("JWT validation failed.");
+                    SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(authToken);
+                    log.info("User authenticated successfully.");
+                } else {
+                    log.warn("JWT validation failed.");
+                }
             }
-            }
-
-
+        }
+            catch (Exception exception) {
+                    // This will now catch decryption errors AND JWT parsing/expiration errors
+                    log.error("Authentication error: {}", exception.getMessage());
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
 
         filterChain.doFilter(request, response);
 

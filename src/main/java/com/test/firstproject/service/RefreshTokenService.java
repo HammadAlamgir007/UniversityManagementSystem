@@ -15,5 +15,5 @@ public interface RefreshTokenService {
             RefreshToken token
     );
 
-
+    RefreshToken findByToken(String token);
 }

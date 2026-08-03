@@ -74,5 +74,18 @@ public class RefreshTokenServiceImpl
         return token;
 
     }
+    @Override
+    public RefreshToken findByToken(String token) {
+
+
+        return repository.findByToken(token)
+
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Refresh token not found"
+                        )
+                );
+
+    }
 
 }

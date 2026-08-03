@@ -1,6 +1,5 @@
 HELP.md
 target/
-.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
@@ -14,7 +13,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -31,3 +30,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Logs (never commit real logs - may contain tokens/PII) ###
+logs/
+*.log
+
+### Local secrets override (see README for setup) ###
+application-*-local.properties
+.env
+.env.*
+!.env.example

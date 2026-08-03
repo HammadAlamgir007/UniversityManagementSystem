@@ -1,6 +1,7 @@
 package com.test.firstproject.service;
 
 import com.test.firstproject.dto.request.LoginRequest;
+import com.test.firstproject.dto.request.RefreshTokenRequest;
 import com.test.firstproject.dto.request.SignupRequest;
 import com.test.firstproject.dto.response.LoginResponse;
 import com.test.firstproject.entity.RefreshToken;
@@ -10,6 +11,7 @@ import com.test.firstproject.entity.User;
 import com.test.firstproject.exception.UsernameAlreadyExistsException;
 import com.test.firstproject.exception.UsernameDoesNotExistException;
 import com.test.firstproject.repository.UserRepository;
+import com.test.firstproject.security.AesEncryptionService;
 import com.test.firstproject.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ public class AuthServiceImpl implements AuthService{
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
+    private final AesEncryptionService aesEncryptionService;
     @Override
     public void signup(SignupRequest request)
     {
@@ -55,25 +58,50 @@ public class AuthServiceImpl implements AuthService{
         );
         User user = userRepository.findByUsername(request.username())
                 .orElseThrow(() ->
-                        new UsernameDoesNotExistException("Invalid username or password"));
+                        new UsernameDoesNotExistException("User not found after successful authentication"));
 
-        if (!passwordEncoder.matches(
-                request.password(),
-                user.getPassword())) {
-
-            throw new UsernameDoesNotExistException(
-                    "Invalid username or password");
-        }
-
-        String accessToken   = jwtService.generateToken(
+        String jwt   = jwtService.generateToken(
                 user.getUsername());
+        String encrypted =
+                aesEncryptionService.encrypt(jwt);
+
         RefreshToken refreshToken =
                 refreshTokenService.createRefreshToken(
                         user
                 );
 
-        return new LoginResponse(accessToken,
+        return new LoginResponse(encrypted,
 
                 refreshToken.getToken());
+    }
+    @Override
+    public LoginResponse refreshToken(
+            RefreshTokenRequest request
+    ) {
+
+
+        RefreshToken refreshToken =
+                refreshTokenService
+                        .findByToken(
+                                request.refreshToken()
+                        );
+        refreshTokenService
+                .verifyExpiration(
+                        refreshToken
+                );
+
+        User user = refreshToken.getUser();
+        String jwt = jwtService.generateToken(user.getUsername());
+        String encryptedAccessToken =
+                aesEncryptionService.encrypt(jwt);
+
+        return new LoginResponse(
+
+                encryptedAccessToken,
+
+                refreshToken.getToken()
+
+        );
+
     }
 }

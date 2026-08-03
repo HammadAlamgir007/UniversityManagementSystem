@@ -2,6 +2,7 @@ package com.test.firstproject.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import com.test.firstproject.dto.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -169,7 +170,7 @@ public class GlobalExceptionHandler {
                         "User Name Already Exist",
                         false,
                         null,
-                      LocalDateTime.now()
+                        LocalDateTime.now()
 
                 );
 
@@ -191,6 +192,38 @@ public class GlobalExceptionHandler {
                         null,
                         LocalDateTime.now()
 
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(response);
+
+    }
+
+    // Handles bad password, disabled/locked accounts, etc. from AuthenticationManager.authenticate()
+    // during login. Without this, these exceptions fall through to handleGlobalException()
+    // and incorrectly return 500 instead of 401.
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse>
+    handleAuthenticationException(
+            AuthenticationException exception
+    ) {
+
+        log.warn(
+                "Authentication failed: {}",
+                exception.getMessage()
+        );
+
+        // Deliberately generic message: don't reveal whether the username exists,
+        // was locked, or the password was wrong.
+        String message = "Invalid username or password";
+
+        ErrorResponse response =
+                new ErrorResponse(
+                        message,
+                        false,
+                        null,
+                        LocalDateTime.now()
                 );
 
         return ResponseEntity

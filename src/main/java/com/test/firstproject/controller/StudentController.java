@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class StudentController {
     // return specific response code in all apis
     private final StudentService studentService;
     @PostMapping
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<StudentResponse>> createStudent(@Valid @RequestBody StudentRequest request )
     {
         StudentResponse student = studentService.createStudent(request);
@@ -40,6 +42,7 @@ public class StudentController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<List<StudentResponse>>> getAllStudents()
     {
 
@@ -54,6 +57,7 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<StudentResponse>> getStudentById(@Valid @PathVariable Long id) {
 
         StudentResponse student = studentService.getStudentById(id);
@@ -69,6 +73,7 @@ public class StudentController {
 
     }
     @GetMapping("/{id}/profile")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<StudentWithProfileResponse>>
     getStudentWithProfile(
             @PathVariable Long id
@@ -91,6 +96,7 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<StudentResponse>> updateStudent( @PathVariable Long id,@Valid
              @RequestBody StudentRequest request ) {
         StudentResponse updatedStudent = studentService.updateStudent(id,request);
@@ -104,6 +110,7 @@ public class StudentController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteStudent(
             @PathVariable Long id)
     {
