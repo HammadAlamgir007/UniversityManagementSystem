@@ -1,5 +1,6 @@
 package com.test.firstproject.exception;
 
+import com.test.firstproject.dto.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.AuthenticationException;
@@ -228,6 +229,30 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
+                .body(response);
+
+    }
+    @ExceptionHandler(ExternalApiException.class)
+
+    public ResponseEntity<ApiResponse<Object>>
+    handleExternalApiException(
+            ExternalApiException ex) {
+
+        ApiResponse<Object> response =
+                new ApiResponse<>(
+
+                        ex.getMessage(),
+
+                        ex.getResponseCode(),
+
+                        null
+
+                );
+
+        return ResponseEntity
+
+                .status(HttpStatus.BAD_GATEWAY)
+
                 .body(response);
 
     }

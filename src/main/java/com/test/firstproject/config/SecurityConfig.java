@@ -24,20 +24,18 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableMethodSecurity
 public class SecurityConfig {
 
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     private final CustomAccessDeniedHandler accessDeniedHandler;
-    private final AuthenticationProvider authenticationProvider;
     public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter, AuthenticationProvider authenticationProvider,
-
+            JwtAuthenticationFilter jwtAuthenticationFilter,
             JwtAuthenticationEntryPoint authenticationEntryPoint,
 
             CustomAccessDeniedHandler accessDeniedHandler) {
 
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.authenticationProvider = authenticationProvider;
 
         this.authenticationEntryPoint = authenticationEntryPoint;
 

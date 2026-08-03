@@ -95,8 +95,10 @@ public class StudentServiceImpl implements StudentService {
     @Override
     @Transactional(readOnly = true)
     public List<StudentResponse> getAllStudents() {
+        log.info("StudentServiceImpl.getAllStudents() started");
         List<Student> students =
                 studentRepository.findAllWithProfiles();
+        log.info("StudentServiceImpl.getAllStudents() ended");
         return students.stream()
                 .map(this::mapToResponse)
                 .toList();

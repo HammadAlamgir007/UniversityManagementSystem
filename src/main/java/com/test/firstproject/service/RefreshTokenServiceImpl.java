@@ -5,6 +5,7 @@ import com.test.firstproject.entity.RefreshToken;
 import com.test.firstproject.entity.User;
 import com.test.firstproject.repository.RefreshTokenRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -12,46 +13,28 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
-
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenServiceImpl
         implements RefreshTokenService {
-
-
     private final RefreshTokenRepository repository;
-
-
 
     @Override
     public RefreshToken createRefreshToken(User user) {
 
-
-        RefreshToken refreshToken =
-                new RefreshToken();
-
-
+        RefreshToken refreshToken =repository.findByUser(user).
+                orElse(new RefreshToken());
         refreshToken.setUser(user);
-
-
         refreshToken.setToken(
                 UUID.randomUUID().toString()
         );
-
-
         refreshToken.setExpiryDate(
                 LocalDateTime.now()
                         .plusDays(7)
         );
-
-
         return repository.save(refreshToken);
 
     }
-
-
-
     @Override
     public RefreshToken verifyExpiration(
             RefreshToken token) {
@@ -85,6 +68,15 @@ public class RefreshTokenServiceImpl
                                 "Refresh token not found"
                         )
                 );
+
+    }
+    @Override
+    @Transactional
+    public void deleteExpiredTokens() {
+
+        repository.deleteByExpiryDateBefore(
+                LocalDateTime.now()
+        );
 
     }
 

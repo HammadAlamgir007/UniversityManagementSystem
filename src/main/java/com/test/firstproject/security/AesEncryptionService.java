@@ -7,12 +7,22 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Base64;
 
 @Service
 public class AesEncryptionService {
+
+    private static final String TRANSFORMATION = "AES/GCM/NoPadding";
+
+
+    private static final int IV_LENGTH_BYTES = 12;
+
+    private static final int TAG_LENGTH_BITS = 128;
 
     @Value("${aes.secret}")
     private String secret;
@@ -36,12 +46,17 @@ public class AesEncryptionService {
 
         try {
 
+
+            byte[] iv = new byte[IV_LENGTH_BYTES];
+            new SecureRandom().nextBytes(iv);
+
             Cipher cipher =
-                    Cipher.getInstance("AES/GCM/NoPadding");
+                    Cipher.getInstance(TRANSFORMATION);
 
             cipher.init(
                     Cipher.ENCRYPT_MODE,
-                    secretKey
+                    secretKey,
+                    new GCMParameterSpec(TAG_LENGTH_BITS, iv)
             );
 
             byte[] encrypted =
@@ -51,9 +66,15 @@ public class AesEncryptionService {
                             )
                     );
 
+
+            ByteBuffer buffer =
+                    ByteBuffer.allocate(IV_LENGTH_BYTES + encrypted.length);
+            buffer.put(iv);
+            buffer.put(encrypted);
+
             return Base64
                     .getEncoder()
-                    .encodeToString(encrypted);
+                    .encodeToString(buffer.array());
 
         }
 
@@ -72,20 +93,29 @@ public class AesEncryptionService {
 
         try {
 
-            Cipher cipher =
-                    Cipher.getInstance("AES/GCM/NoPadding");
-
-            cipher.init(
-                    Cipher.DECRYPT_MODE,
-                    secretKey
-            );
-
             byte[] decoded =
                     Base64.getDecoder()
                             .decode(encryptedText);
 
+            ByteBuffer buffer = ByteBuffer.wrap(decoded);
+
+            byte[] iv = new byte[IV_LENGTH_BYTES];
+            buffer.get(iv);
+
+            byte[] cipherBytes = new byte[buffer.remaining()];
+            buffer.get(cipherBytes);
+
+            Cipher cipher =
+                    Cipher.getInstance(TRANSFORMATION);
+
+            cipher.init(
+                    Cipher.DECRYPT_MODE,
+                    secretKey,
+                    new GCMParameterSpec(TAG_LENGTH_BITS, iv)
+            );
+
             byte[] decrypted =
-                    cipher.doFinal(decoded);
+                    cipher.doFinal(cipherBytes);
 
             return new String(
                     decrypted,

@@ -45,7 +45,7 @@ public class StudentController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<List<StudentResponse>>> getAllStudents()
     {
-
+        log.info("GET /student started::");
         List<StudentResponse> student = studentService.getAllStudents();
         ApiResponse<List<StudentResponse>> response =
                 new ApiResponse<>(
@@ -53,6 +53,7 @@ public class StudentController {
                         "00",
                         student
                 );
+        log.info("GET /student ended::");
         return ResponseEntity.ok(response);
     }
 

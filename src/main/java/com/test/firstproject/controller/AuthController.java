@@ -86,29 +86,4 @@ public class AuthController {
         );
 
     }
-    @GetMapping("/aes-test")
-    public String aesTest() {
-
-        String original = "Hello Spring Boot";
-
-        String encrypted =
-                aesEncryptionService.encrypt(original);
-
-        String decrypted =
-                aesEncryptionService.decrypt(encrypted);
-
-        return """
-            Original : %s
-
-            Encrypted : %s
-
-            Decrypted : %s
-            """
-                .formatted(
-                        original,
-                        encrypted,
-                        decrypted
-                );
-
-    }
 }

@@ -1,6 +1,6 @@
 package com.test.firstproject.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.test.firstproject.dto.response.ApiResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,8 +40,8 @@ public class JwtAuthenticationEntryPoint
                         "Authentication required"
                 );
 
-        ObjectMapper mapper =
-                new ObjectMapper();
+        JsonMapper mapper =
+                JsonMapper.builder().build();
 
         mapper.writeValue(
                 response.getOutputStream(),

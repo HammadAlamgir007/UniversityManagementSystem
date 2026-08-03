@@ -17,16 +17,11 @@ import java.util.UUID;
 @Component
 public class RequestLoggingInterceptor
         implements HandlerInterceptor {
-
-
     private static final String START_TIME =
             "startTime";
 
-
     private static final String REQUEST_ID =
             "requestId";
-
-
 
     @Override
     public boolean preHandle(
@@ -34,31 +29,21 @@ public class RequestLoggingInterceptor
             HttpServletResponse response,
             Object handler) {
 
-
         long startTime =
                 System.currentTimeMillis();
-
-
         String requestId =
                 UUID.randomUUID()
                         .toString()
                         .substring(0,8);
 
-
-
         request.setAttribute(
                 START_TIME,
                 startTime
         );
-
-
         request.setAttribute(
                 REQUEST_ID,
                 requestId
         );
-
-
-
         log.info(
                 """
                 REQUEST START
@@ -72,8 +57,6 @@ public class RequestLoggingInterceptor
                 request.getRequestURI(),
                 request.getRemoteAddr()
         );
-
-
         return true;
 
     }
@@ -108,8 +91,6 @@ public class RequestLoggingInterceptor
                         REQUEST_ID
                 );
 
-
-
         log.info(
                 """
                 REQUEST END
@@ -122,17 +103,13 @@ public class RequestLoggingInterceptor
                 time
         );
 
-
         if(ex != null){
 
             log.error(
                     "Request failed",
                     ex
             );
-
         }
-
-
     }
 
 }
