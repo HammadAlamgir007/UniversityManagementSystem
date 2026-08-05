@@ -33,7 +33,6 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public void signup(SignupRequest request)
     {
-
         log.info("Creating new student with username: {}", request.username());
           if (userRepository.existsByUsername(request.username())){
               log.warn("Student already exists with username: {}", request.username());
