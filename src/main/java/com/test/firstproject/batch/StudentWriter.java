@@ -2,8 +2,8 @@ package com.test.firstproject.batch;
 
 import com.test.firstproject.entity.Student;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.stereotype.Component;
 
 @Slf4j

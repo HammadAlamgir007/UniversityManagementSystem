@@ -1,4 +1,4 @@
-package com.test.firstproject.service;
-
-public class DepartmentServiceImpl {
-}
+//package com.test.firstproject.service;
+//
+//public class DepartmentServiceImpl {
+//}

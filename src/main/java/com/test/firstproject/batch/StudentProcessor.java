@@ -1,7 +1,7 @@
 package com.test.firstproject.batch;
 
 import com.test.firstproject.entity.Student;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 @Component

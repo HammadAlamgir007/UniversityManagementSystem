@@ -22,7 +22,7 @@ public class BatchScheduler {
         this.studentJob = studentJob;
     }
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 800000000)
     public void runJob() throws Exception {
 
         JobParameters params = new JobParametersBuilder()

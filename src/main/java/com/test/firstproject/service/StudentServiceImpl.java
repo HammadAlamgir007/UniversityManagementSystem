@@ -86,9 +86,9 @@ public class StudentServiceImpl implements StudentService {
                 "Welcome to Student Portal"
 
         );
-        BackgroundService backgroundService = new BackgroundService();
-        backgroundService.start();
-        System.out.println("Main Thread: " + Thread.currentThread().getName());
+//        BackgroundService backgroundService = new BackgroundService();
+//        backgroundService.start();
+//        System.out.println("Main Thread: " + Thread.currentThread().getName());
 
         log.info(
                 "Student created successfully with ID: {}",

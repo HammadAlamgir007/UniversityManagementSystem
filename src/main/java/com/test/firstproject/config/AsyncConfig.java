@@ -1,45 +1,45 @@
-package com.test.firstproject.config;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import java.util.concurrent.Executor;
-
-@Configuration
-@EnableAsync
-public class AsyncConfig {
-
-//    @Bean("blbExecutor")
-//    public Executor blbExecutor() {
+//package com.test.firstproject.config;
 //
-//        ThreadPoolTaskExecutor executor =
-//                new ThreadPoolTaskExecutor();
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.scheduling.annotation.EnableAsync;
+//import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 //
-//        executor.setCorePoolSize(5);
+//import java.util.concurrent.Executor;
 //
-//        executor.setMaxPoolSize(10);
+//@Configuration
+//@EnableAsync
+//public class AsyncConfig {
 //
-//        executor.setQueueCapacity(100);
+////    @Bean("blbExecutor")
+////    public Executor blbExecutor() {
+////
+////        ThreadPoolTaskExecutor executor =
+////                new ThreadPoolTaskExecutor();
+////
+////        executor.setCorePoolSize(5);
+////
+////        executor.setMaxPoolSize(10);
+////
+////        executor.setQueueCapacity(100);
+////
+////        executor.setThreadNamePrefix("BLB-");
+////
+////        executor.initialize();
+////
+////        return executor;
+////    }
+//    @Bean("Youtube")
+//    public Executor youtubeExecutor() {
 //
-//        executor.setThreadNamePrefix("BLB-");
+//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+//
+//        executor.setCorePoolSize(2);
+//        executor.setMaxPoolSize(5);
 //
 //        executor.initialize();
 //
 //        return executor;
 //    }
-    @Bean("Youtube")
-    public Executor youtubeExecutor() {
-
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(5);
-
-        executor.initialize();
-
-        return executor;
-    }
-
-}
+//
+//}
