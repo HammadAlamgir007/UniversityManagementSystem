@@ -17,7 +17,8 @@ public record SignupRequest(
                 regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$",
                 message = "Password must contain at least one digit, one lowercase, one uppercase, and one special character"
         )
-        String password
+        String password,
+        String email
 
 ) {
 }

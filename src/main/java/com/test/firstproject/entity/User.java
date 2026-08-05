@@ -45,6 +45,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false, unique = true)
+    private String email;
+
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();

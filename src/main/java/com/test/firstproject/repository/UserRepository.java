@@ -12,7 +12,7 @@ public interface UserRepository
         extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
-    // Inside UserRepository.java
+    Optional<User> findByEmail(String email);
     Page<User> findByUpdatedAtBefore(LocalDateTime time, Pageable pageable);
     boolean existsByUsername(String username);
 
