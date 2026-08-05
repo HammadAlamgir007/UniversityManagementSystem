@@ -14,7 +14,8 @@ public record StudentProfileResponse(
 
         Long studentId,
 
-        String studentName
+        String studentName,
 
+        String imageUrl
 ) {
 }

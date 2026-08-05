@@ -15,7 +15,8 @@ public record StudentProfileRequest(
         @NotBlank(message = "CNIC is required")
         @Pattern(regexp = "^\\d{5}-\\d{7}-\\d{1}$", message = "CNIC must match format XXXXX-XXXXXXX-X")
         String cnic,
-
+//        @NotBlank(message = "Must upload any file")
+//        String profileImage,
         Long studentId
 
 ) {

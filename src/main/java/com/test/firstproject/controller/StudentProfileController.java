@@ -4,14 +4,17 @@ import com.test.firstproject.dto.response.ApiResponse;
 import com.test.firstproject.dto.response.StudentProfileResponse;
 
 import com.test.firstproject.service.StudentProfileService;
-import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
 
 @RestController
 @Slf4j
@@ -20,13 +23,14 @@ import java.util.List;
 public class StudentProfileController {
 
     private final StudentProfileService studentProfileService;
-    @PostMapping
+    @PostMapping(
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<StudentProfileResponse>>
-    createProfile(
-            @RequestBody StudentProfileRequest request) {
+    createProfile(@RequestPart("image") MultipartFile image,
+            @RequestPart("profile") StudentProfileRequest request) {
 
         StudentProfileResponse profile =
-                studentProfileService.createProfile(request);
+                studentProfileService.createProfile(request,image);
 
         ApiResponse<StudentProfileResponse> response =
                 new ApiResponse<>(
@@ -42,6 +46,7 @@ public class StudentProfileController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<StudentProfileResponse>> getProfileById(@PathVariable Long id) {
 
@@ -49,7 +54,7 @@ public class StudentProfileController {
 
         ApiResponse<StudentProfileResponse> response =
                 new ApiResponse<>(
-                        "Student deleted successfully",
+                        "Student fetched successfully",
                         "00",
                         profile
                 );
@@ -77,6 +82,7 @@ public class StudentProfileController {
         return ResponseEntity.ok(response);
     }
     @PutMapping("/{id}")
+
     public ResponseEntity<ApiResponse<StudentProfileResponse>> updateProfile(
             @PathVariable Long id,
             @RequestBody StudentProfileRequest request) {
@@ -105,7 +111,7 @@ public class StudentProfileController {
         studentProfileService.deleteProfile(id);
         ApiResponse<Void> response =
                 new ApiResponse<>(
-                        "Student fetched successfully",
+                        "Student deleted successfully",
                         "00",
                         null
 

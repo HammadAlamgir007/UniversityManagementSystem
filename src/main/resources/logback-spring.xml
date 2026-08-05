@@ -2,31 +2,26 @@
 
 <configuration scan="true" scanPeriod="30 seconds">
 
-    <!-- ================= Properties ================= -->
-    <!-- Overridable via -DLOG_PATH=/var/log/myapp or env var LOG_PATH -->
     <property name="LOG_PATH" value="${LOG_PATH:-logs}"/>
     <property name="APP_NAME" value="firstproject"/>
-
-    <!-- Change this to your real base package -->
     <property name="BASE_PACKAGE" value="com.test.firstproject"/>
 
     <!-- ================= Console Appenders ================= -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>
-                %cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) %highlight(%-5level)  %green(%logger{36}) - %msg%n
-            </pattern>
+            <pattern>%cyan(%d{HH:mm:ss.SSS}) %highlight(%-5level) reqId=%X{requestId:-} %green(%logger{36}) - %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
-    <!-- Plain (no ANSI) console — used in prod / no active profile -->
     <appender name="CONSOLE_PLAIN" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level  %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level reqId=%X{requestId:-} %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
-    <!-- ================= Application Log ================= -->
+    <!-- ================= Single Application Log (app logs + API traffic together) ================= -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/${APP_NAME}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -37,7 +32,8 @@
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{40} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level reqId=%X{requestId:-} %logger{40} - %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -55,15 +51,12 @@
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level  %logger{40} - %msg%n%ex{full}</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level reqId=%X{requestId:-} %logger{40} - %msg%n%ex{full}</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
-
-
-
-
-    <!-- Prevents disk I/O from blocking application threads -->
+    <!-- Async wrappers -->
     <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="FILE"/>
         <queueSize>512</queueSize>
@@ -83,15 +76,32 @@
     <!-- ================= Loggers ================= -->
     <logger name="${BASE_PACKAGE}" level="DEBUG"/>
 
-    <!-- Quiet down noisy third-party libraries -->
+    <!-- API request/response filter logs at INFO regardless of root level, but no separate file ;
+         it flows into the same FILE appender via root, so everything is traceable by reqId in one place -->
+    <logger name="com.test.firstproject.config.logging.RequestResponseLoggingFilter" level="INFO"/>
+
     <logger name="org.springframework" level="INFO"/>
     <logger name="org.hibernate" level="WARN"/>
     <logger name="org.apache" level="WARN"/>
 
+    <!-- ================= Profiles ================= -->
+    <springProfile name="local">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
 
     <springProfile name="dev">
-        <root level="WARN">
+        <root level="INFO">
             <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_FILE"/>
+            <appender-ref ref="ASYNC_ERROR_FILE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE_PLAIN"/>
             <appender-ref ref="ASYNC_FILE"/>
             <appender-ref ref="ASYNC_ERROR_FILE"/>
         </root>

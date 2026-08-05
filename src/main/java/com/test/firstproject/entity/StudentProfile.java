@@ -2,8 +2,7 @@ package com.test.firstproject.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+
 
 @Entity
 @Data
@@ -22,7 +21,10 @@ public class StudentProfile {
 
     private String bloodGroup;
 
+    private String imageName;
+    
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private Student student;
+
 }

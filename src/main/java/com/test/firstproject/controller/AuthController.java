@@ -5,12 +5,9 @@ import com.test.firstproject.dto.request.RefreshTokenRequest;
 import com.test.firstproject.dto.request.SignupRequest;
 import com.test.firstproject.dto.response.ApiResponse;
 import com.test.firstproject.dto.response.LoginResponse;
-import com.test.firstproject.entity.RefreshToken;
-import com.test.firstproject.entity.User;
-import com.test.firstproject.security.AesEncryptionService;
-import com.test.firstproject.security.JwtService;
+
 import com.test.firstproject.service.AuthService;
-import com.test.firstproject.service.RefreshTokenService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +21,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    private final AesEncryptionService aesEncryptionService;
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Void>>Signup(
             @Valid
