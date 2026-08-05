@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +26,7 @@ public class StudentProfileController {
     private final StudentProfileService studentProfileService;
     @PostMapping(
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<StudentProfileResponse>>
     createProfile(@RequestPart("image") MultipartFile image,
             @RequestPart("profile") StudentProfileRequest request) {
@@ -48,6 +50,7 @@ public class StudentProfileController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<StudentProfileResponse>> getProfileById(@PathVariable Long id) {
 
         StudentProfileResponse profile = studentProfileService.getProfileById(id);
@@ -63,6 +66,7 @@ public class StudentProfileController {
 
     }
     @GetMapping
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<List<StudentProfileResponse>>> getAllProfiles() {
 
         List<StudentProfileResponse> profiles =
@@ -82,7 +86,7 @@ public class StudentProfileController {
         return ResponseEntity.ok(response);
     }
     @PutMapping("/{id}")
-
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<StudentProfileResponse>> updateProfile(
             @PathVariable Long id,
             @RequestBody StudentProfileRequest request) {
@@ -104,6 +108,7 @@ public class StudentProfileController {
         return ResponseEntity.ok(response);
     }
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteProfile(
             @PathVariable Long id)
     {

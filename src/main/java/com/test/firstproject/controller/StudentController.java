@@ -127,6 +127,7 @@ public class StudentController {
         return ResponseEntity.ok(response);
     }
     @GetMapping("/search")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<List<StudentResponse>>> searchStudent(
             @Valid @RequestParam(required = false)
             String name,
@@ -145,6 +146,7 @@ public class StudentController {
         );
     }
     @GetMapping("/page")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<Page<StudentResponse>>> getStudents(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
